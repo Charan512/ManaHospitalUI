@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../core/localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
-import '../login_screen.dart';
-import 'patient_history_screen.dart';
-import 'booking_wizard.dart';
-import 'notification_screen.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// Patient Dashboard
@@ -37,10 +34,7 @@ class PatientDashboard extends StatelessWidget {
             icon: const Icon(Icons.notifications_none_rounded, color: AppColors.medicalBlue),
             tooltip: 'Notifications',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NotificationScreen()),
-              );
+              context.push('/patient/notifications');
             },
           ),
           IconButton(
@@ -48,12 +42,6 @@ class PatientDashboard extends StatelessWidget {
             tooltip: 'Logout',
             onPressed: () async {
               await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
-              }
             },
           ),
           // Language toggle snippet from previous Home
@@ -164,12 +152,7 @@ class PatientDashboard extends StatelessWidget {
               icon: Icons.calendar_month_rounded,
               color: AppColors.medicalBlue,
               bgLight: AppColors.paleSkyBlue,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const BookingWizardScreen()),
-                );
-              },
+              onTap: () => context.push('/patient/booking'),
             ),
 
             const SizedBox(height: 20),
@@ -181,12 +164,7 @@ class PatientDashboard extends StatelessWidget {
               icon: Icons.history_rounded,
               color: AppColors.textPrimary,
               bgLight: AppColors.cardBorder.withValues(alpha: 0.5),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PatientHistoryScreen()),
-                );
-              },
+              onTap: () => context.push('/patient/history'),
             ),
 
             const SizedBox(height: 40),

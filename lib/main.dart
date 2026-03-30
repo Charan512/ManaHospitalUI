@@ -3,10 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/locale_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'core/theme.dart';
-import 'screens/login_screen.dart';
-import 'screens/patient/patient_dashboard.dart';
-import 'screens/admin/admin_dashboard.dart';
+import 'core/router.dart';
 import 'services/api_service.dart';
 import 'widgets/connection_overlay.dart';
 
@@ -27,19 +26,37 @@ void main() async {
   runApp(const ManaHospitalApp());
 }
 
-class ManaHospitalApp extends StatelessWidget {
+class ManaHospitalApp extends StatefulWidget {
   const ManaHospitalApp({super.key});
+
+  @override
+  State<ManaHospitalApp> createState() => _ManaHospitalAppState();
+}
+
+class _ManaHospitalAppState extends State<ManaHospitalApp> {
+  late final AuthProvider _authProvider;
+  late final GoRouter _router;
+  late final LocaleProvider _localeProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _authProvider = AuthProvider()..tryAutoLogin();
+    _router = createRouter(_authProvider);
+    _localeProvider = LocaleProvider()..loadSavedLocale();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LocaleProvider()..loadSavedLocale()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()..tryAutoLogin()),
+        ChangeNotifierProvider.value(value: _localeProvider),
+        ChangeNotifierProvider.value(value: _authProvider),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, _) {
-          return MaterialApp(
+          return MaterialApp.router(
+            routerConfig: _router,
             title: 'Mana Hospital',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
@@ -57,7 +74,6 @@ class ManaHospitalApp extends StatelessWidget {
                 ],
               );
             },
-            home: const AppWrapper(),
           );
         },
       ),
@@ -65,84 +81,3 @@ class ManaHospitalApp extends StatelessWidget {
   }
 }
 
-/// ─────────────────────────────────────────────────────────────────────────────
-/// AppWrapper — The Dual-Interface Switchboard
-/// ─────────────────────────────────────────────────────────────────────────────
-/// Defers routing entirely to `AuthProvider`, which accurately tracks both
-/// the async Secure Storage bootstrap and the remote API JWT acquisition.
-///
-///  ┌──────────────────────────────────────────────────────────────────┐
-///  │ auth.isBootstrapping  →  _SplashLoadingScreen                    │
-///  │ !auth.isAuthenticated →  LoginScreen                             │
-///  │ auth.isAdmin          →  AdminDashboard                          │
-///  │ otherwise             →  PatientDashboard                        │
-///  └──────────────────────────────────────────────────────────────────┘
-class AppWrapper extends StatelessWidget {
-  const AppWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, auth, _) {
-        if (auth.isBootstrapping) {
-          return const _SplashLoadingScreen();
-        }
-
-        if (!auth.isAuthenticated) {
-          return const LoginScreen();
-        }
-
-        return auth.isAdmin ? const AdminDashboard() : const PatientDashboard();
-      },
-    );
-  }
-}
-
-/// Minimal loading screen shown during bootstrap
-class _SplashLoadingScreen extends StatelessWidget {
-  const _SplashLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // MH Logo
-            Image.asset(
-              'assets/icon.png',
-              width: 140,
-              height: 140,
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Mana Hospital',
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Bhimavaram\'s Trusted Care',
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 40),
-            const CircularProgressIndicator(
-              color: AppColors.medicalBlue,
-              strokeWidth: 2.5,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../../services/api_service.dart';
-import '../login_screen.dart';
-import 'approvals_screen.dart';
-import 'slot_log_screen.dart';
 import '../../widgets/shimmer_loading.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
@@ -83,12 +81,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             tooltip: 'Logout',
             onPressed: () async {
               await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
-              }
             },
           ),
           GestureDetector(
@@ -194,7 +186,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               // 1. Approvals Card (with live badge)
               GestureDetector(
                 onTap: () async {
-                  await Navigator.push(context, MaterialPageRoute(builder: (_) => const ApprovalsScreen()));
+                  await context.push('/admin/approvals');
                   // Refresh specific counts when returning
                   _fetchStats();
                 },
@@ -264,7 +256,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               // 2. Slot Log Card
               GestureDetector(
                 onTap: () async {
-                  await Navigator.push(context, MaterialPageRoute(builder: (_) => const SlotLogScreen()));
+                  await context.push('/admin/slot_log');
                   _fetchStats(); // Refresh just in case they added walk-ins
                 },
                 child: Container(
