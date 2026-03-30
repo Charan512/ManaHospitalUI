@@ -7,6 +7,7 @@ import '../../services/api_service.dart';
 import '../login_screen.dart';
 import 'approvals_screen.dart';
 import 'slot_log_screen.dart';
+import '../../widgets/shimmer_loading.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// Admin Dashboard
@@ -323,21 +324,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Recent Patient Logs', style: AppTextStyles.titleLarge),
-                    if (_isLoading) 
-                       const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.medicalBlue))
                   ],
                 ),
               ),
               const SizedBox(height: 12),
               
-              if (!_isLoading && _recentLogs.isEmpty)
+              if (_isLoading)
+                ...List.generate(3, (_) => ShimmerLoading.buildRecentLogSkeleton())
+              else if (_recentLogs.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(32),
                   child: Center(
                     child: Text('No recent logs found.', style: TextStyle(color: AppColors.textSecondary)),
                   ),
-                ),
-
+                )
+              else
               // Renders recent log items
               ..._recentLogs.map((log) {
                 final String name = log['patientName'] ?? 'Unknown';

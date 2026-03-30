@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class PatientHistoryScreen extends StatefulWidget {
   const PatientHistoryScreen({super.key});
@@ -67,7 +68,11 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
         title: const Text('My History'),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.medicalBlue))
+          ? ListView(
+              padding: const EdgeInsets.all(16),
+              physics: const NeverScrollableScrollPhysics(),
+              children: List.generate(4, (_) => ShimmerLoading.buildHistoryCardSkeleton()),
+            )
           : _error != null
               ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
               : _appointments.isEmpty

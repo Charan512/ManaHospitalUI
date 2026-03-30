@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../../widgets/slot_gradient_card.dart';
 import '../../services/api_service.dart';
+import '../../widgets/shimmer_loading.dart';
 import 'offline_entry_form.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
@@ -181,17 +182,24 @@ class _SlotLogScreenState extends State<SlotLogScreen> {
           ),
           
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.medicalBlue))
-                : RefreshIndicator(
-                    color: AppColors.medicalBlue,
-                    onRefresh: _refresh,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        const SizedBox(height: 12),
-                        
-                        // Render dynamically nested slot arrays
+            child: RefreshIndicator(
+              color: AppColors.medicalBlue,
+              onRefresh: _refresh,
+              child: _isLoading
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      const SizedBox(height: 12),
+                      ShimmerLoading.buildSlotCardSkeleton(),
+                      ShimmerLoading.buildSlotCardSkeleton(),
+                    ],
+                  )
+                : ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      const SizedBox(height: 12),
+                      
+                      // Render dynamically nested slot arrays
                         ..._slots.map((slotData) {
                           final slotName = slotData['slot'] as String;
                           final slotAppts = _appointments.where((a) => a['slot'] == slotName).toList();

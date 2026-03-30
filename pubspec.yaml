@@ -29,6 +29,9 @@ dependencies:
   # ── Splash screen ────────────────────────────────────────────────────────
   flutter_native_splash: ^2.4.3
 
+  # ── UI Enhancements ──────────────────────────────────────────────────────
+  shimmer: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

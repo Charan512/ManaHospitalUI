@@ -8,6 +8,8 @@ import 'core/theme.dart';
 import 'screens/login_screen.dart';
 import 'screens/patient/patient_dashboard.dart';
 import 'screens/admin/admin_dashboard.dart';
+import 'services/api_service.dart';
+import 'widgets/connection_overlay.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// Mana Hospital — App Entry Point
@@ -42,7 +44,20 @@ class ManaHospitalApp extends StatelessWidget {
             title: 'Mana Hospital',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
-            // Locale is managed manually via LocaleProvider — no l10n delegates needed
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  if (child != null) child,
+                  ValueListenableBuilder<bool>(
+                    valueListenable: ApiService.isOffline,
+                    builder: (context, isOffline, _) {
+                      if (isOffline) return const ConnectionOverlay();
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
+              );
+            },
             home: const AppWrapper(),
           );
         },

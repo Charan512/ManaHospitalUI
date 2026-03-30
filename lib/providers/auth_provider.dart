@@ -166,16 +166,22 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } on ApiException catch (e) {
       _setLoading(false);
-      await logout();
+      await logout(); // Only destroy session if the backend explicitly rejects the credentials
       _errorMessage = e.message;
       debugPrint('🚨 BACKEND API ERROR: ${e.statusCode} - ${e.message} - ${e.body}');
+      notifyListeners();
+      return false;
+    } on OfflineException catch (e) {
+      _setLoading(false);
+      // DO NOT logout if it's just a network absence!
+      _errorMessage = e.message;
       notifyListeners();
       return false;
     } catch (e) {
       _setLoading(false);
       await logout();
-      _errorMessage = 'Network API error: $e';
-      debugPrint('🚨 NETWORK OR UNKNOWN ERROR: $e');
+      _errorMessage = 'Unexpected error: $e';
+      debugPrint('🚨 UNKNOWN ERROR: $e');
       notifyListeners();
       return false;
     }
