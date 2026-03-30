@@ -4,7 +4,6 @@ import '../../core/theme.dart';
 import '../../core/localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
-import '../login_screen.dart';
 import 'patient_history_screen.dart';
 import 'booking_wizard.dart';
 import 'notification_screen.dart';
@@ -48,11 +47,9 @@ class PatientDashboard extends StatelessWidget {
             tooltip: 'Logout',
             onPressed: () async {
               await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
+              // AppWrapper natively reacts to !auth.isAuthenticated and returns LoginScreen.
+              if (context.mounted && Navigator.of(context).canPop()) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
               }
             },
           ),

@@ -12,6 +12,7 @@ class AuthProvider extends ChangeNotifier {
   static const _userKey = 'user_data';
 
   // ── Internal state ────────────────────────────────────────────────────────
+  bool _isBootstrapping = true;
   bool _isLoading = false;
   String? _verificationId;
   String? _jwtToken;
@@ -19,6 +20,7 @@ class AuthProvider extends ChangeNotifier {
   String? _errorMessage;
 
   // ── Public getters ────────────────────────────────────────────────────────
+  bool get isBootstrapping => _isBootstrapping;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _jwtToken != null;
   String? get jwtToken => _jwtToken;
@@ -32,12 +34,18 @@ class AuthProvider extends ChangeNotifier {
 
   /// Restore authenticated session from secure storage on app start.
   Future<void> tryAutoLogin() async {
-    final token = await _storage.read(key: _jwtKey);
-    final userJson = await _storage.read(key: _userKey);
+    try {
+      final token = await _storage.read(key: _jwtKey);
+      final userJson = await _storage.read(key: _userKey);
 
-    if (token != null && userJson != null) {
-      _jwtToken = token;
-      _userData = jsonDecode(userJson) as Map<String, dynamic>;
+      if (token != null && userJson != null) {
+        _jwtToken = token;
+        _userData = jsonDecode(userJson) as Map<String, dynamic>;
+      }
+    } catch (_) {
+      // Ignored
+    } finally {
+      _isBootstrapping = false;
       notifyListeners();
     }
   }

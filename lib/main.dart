@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/locale_provider.dart';
@@ -69,47 +68,31 @@ class ManaHospitalApp extends StatelessWidget {
 /// ─────────────────────────────────────────────────────────────────────────────
 /// AppWrapper — The Dual-Interface Switchboard
 /// ─────────────────────────────────────────────────────────────────────────────
-/// Uses StreamBuilder on FirebaseAuth.authStateChanges() as the primary gate.
-/// Once Firebase confirms an active session, delegates to AuthProvider
-/// (which loaded the backend JWT + role from secure storage) to pick the UI.
+/// Defers routing entirely to `AuthProvider`, which accurately tracks both
+/// the async Secure Storage bootstrap and the remote API JWT acquisition.
 ///
 ///  ┌──────────────────────────────────────────────────────────────────┐
-///  │ Firebase User = null  →  LoginScreen                             │
-///  │ Firebase User ≠ null  →  AuthProvider.isAdmin ?                  │
-///  │                             AdminHome : PatientHome              │
+///  │ auth.isBootstrapping  →  _SplashLoadingScreen                    │
+///  │ !auth.isAuthenticated →  LoginScreen                             │
+///  │ auth.isAdmin          →  AdminDashboard                          │
+///  │ otherwise             →  PatientDashboard                        │
 ///  └──────────────────────────────────────────────────────────────────┘
 class AppWrapper extends StatelessWidget {
   const AppWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        // ── Loading state ────────────────────────────────────────────────
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        if (auth.isBootstrapping) {
           return const _SplashLoadingScreen();
         }
 
-        final firebaseUser = snapshot.data;
-
-        // ── Not authenticated ────────────────────────────────────────────
-        if (firebaseUser == null) {
+        if (!auth.isAuthenticated) {
           return const LoginScreen();
         }
 
-        // ── Authenticated — check role from backend JWT ───────────────────
-        return Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            // If the backend JWT session hasn't loaded yet, show splash
-            if (!(auth.isAuthenticated)) {
-              return const _SplashLoadingScreen();
-            }
-
-            // Route based on role embedded in JWT
-            return auth.isAdmin ? const AdminDashboard() : const PatientDashboard();
-          },
-        );
+        return auth.isAdmin ? const AdminDashboard() : const PatientDashboard();
       },
     );
   }

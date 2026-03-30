@@ -4,7 +4,6 @@ import '../../core/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../../services/api_service.dart';
-import '../login_screen.dart';
 import 'approvals_screen.dart';
 import 'slot_log_screen.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -83,11 +82,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
             tooltip: 'Logout',
             onPressed: () async {
               await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
+              // AppWrapper natively reacts to !auth.isAuthenticated and returns LoginScreen.
+              if (context.mounted && Navigator.of(context).canPop()) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
               }
             },
           ),
