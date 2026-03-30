@@ -4,6 +4,8 @@ import '../../core/theme.dart';
 import '../../core/localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
+import 'patient/patient_dashboard.dart';
+import 'admin/admin_dashboard.dart';
 
 /// Login screen — Phone number entry → OTP verification
 class LoginScreen extends StatefulWidget {
@@ -69,7 +71,17 @@ class _LoginScreenState extends State<LoginScreen> {
           : null,
     );
 
-    if (!success && mounted) {
+    if (success && mounted) {
+      if (auth.isAdmin) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const AdminDashboard()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const PatientDashboard()),
+        );
+      }
+    } else if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(auth.errorMessage ?? 'OTP verification failed.'),
@@ -77,8 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    // On success, main.dart StreamBuilder automatically routes to
-    // PatientHome or AdminHome based on JWT role.
   }
 
   @override
