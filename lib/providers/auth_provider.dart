@@ -173,7 +173,9 @@ class AuthProvider extends ChangeNotifier {
       return false;
     } on OfflineException catch (e) {
       _setLoading(false);
-      // DO NOT logout if it's just a network absence!
+      // We MUST logout because if Firebase auth succeeded but Backend failed, 
+      // the user will be permanently deadlocked on the Splash screen!
+      await logout();
       _errorMessage = e.message;
       notifyListeners();
       return false;

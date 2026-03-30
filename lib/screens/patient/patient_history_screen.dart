@@ -4,6 +4,8 @@ import '../../core/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/shimmer_loading.dart';
+import '../../core/localizations.dart';
+import '../../providers/locale_provider.dart';
 
 class PatientHistoryScreen extends StatefulWidget {
   const PatientHistoryScreen({super.key});
@@ -62,10 +64,13 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String locale = context.watch<LocaleProvider>().locale;
+    final AppL10n l10n  = AppL10n(locale);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('My History'),
+        title: Text(l10n.tr('myHistoryTitle')),
       ),
       body: _isLoading
           ? ListView(
@@ -76,10 +81,10 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
           : _error != null
               ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
               : _appointments.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No appointments found.',
-                        style: TextStyle(fontFamily: 'Outfit', color: AppColors.textSecondary),
+                        l10n.tr('noAppointments'),
+                        style: const TextStyle(fontFamily: 'Outfit', color: AppColors.textSecondary, fontSize: 16),
                       ),
                     )
                   : RefreshIndicator(
@@ -156,19 +161,19 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
                                     children: [
                                       const Icon(Icons.refresh_rounded, size: 16, color: Colors.orange),
                                       const SizedBox(width: 6),
-                                      const Text('Follow-up Appointment', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                                      Text(l10n.tr('followUpAppt'), style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                                     ],
                                   ),
                                 ],
                                 if (prescription != null && prescription.isNotEmpty) ...[
                                   const Divider(height: 24, color: AppColors.cardBorder),
-                                  const Text('Prescription / Notes:', style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.deepBlue)),
+                                  Text(l10n.tr('prescriptionNotes'), style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.deepBlue)),
                                   const SizedBox(height: 4),
                                   Text(prescription, style: const TextStyle(color: AppColors.textSecondary)),
                                 ],
                                 if (validUntil != null && validUntil.isNotEmpty) ...[
                                   const SizedBox(height: 8),
-                                  Text('Next Visit Needed On: $validUntil', style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.green)),
+                                  Text('${l10n.tr('nextVisit')} $validUntil', style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.green)),
                                 ],
                               ],
                             ),

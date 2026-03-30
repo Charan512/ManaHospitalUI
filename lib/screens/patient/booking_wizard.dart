@@ -73,8 +73,9 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
     if (_currentPage == 1) {
       if (_selectedDate == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Please select a date first.'),
+          final l10n = AppL10n(context.read<LocaleProvider>().locale);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.tr('selectDateFirst')),
             backgroundColor: AppColors.deepBlue,
             behavior: SnackBarBehavior.floating,
           ));
@@ -276,9 +277,9 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
               controller: _ageController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                labelText: 'Patient Age *',
-                prefixIcon: Icon(Icons.cake_outlined, color: AppColors.medicalBlue),
+              decoration: InputDecoration(
+                labelText: l10n.tr('patientAge'),
+                prefixIcon: const Icon(Icons.cake_outlined, color: AppColors.medicalBlue),
               ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Age is required';
@@ -301,10 +302,10 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
               maxLines: 3,
               maxLength: 500,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Issue Description *',
-                hintText: 'Describe the health issue…',
-                prefixIcon: Padding(
+              decoration: InputDecoration(
+                labelText: l10n.tr('issueDesc'),
+                hintText: l10n.tr('issueHint'),
+                prefixIcon: const Padding(
                   padding: EdgeInsets.only(bottom: 42),
                   child: Icon(Icons.medical_information_outlined,
                       color: AppColors.medicalBlue),
@@ -323,10 +324,10 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
               maxLines: 2,
               maxLength: 300,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Other Comments (optional)',
+              decoration: InputDecoration(
+                labelText: l10n.tr('otherComments'),
                 hintText: 'Any allergies, prior conditions…',
-                prefixIcon: Padding(
+                prefixIcon: const Padding(
                   padding: EdgeInsets.only(bottom: 28),
                   child: Icon(Icons.comment_outlined, color: AppColors.medicalBlue),
                 ),
@@ -341,6 +342,9 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
   }
 
   Widget _buildStep2() {
+    final locale = context.watch<LocaleProvider>().locale;
+    final l10n = AppL10n(locale);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Column(
@@ -427,7 +431,7 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
                     foregroundColor: AppColors.medicalBlue,
                     elevation: 0,
                   ),
-                  child: const Text('Open Calendar'),
+                  child: Text(l10n.tr('openCalendar')),
                 ),
               ],
             ),
@@ -439,6 +443,7 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
 
   Widget _buildStep3() {
     final locale = context.watch<LocaleProvider>().locale;
+    final l10n = AppL10n(locale);
 
     return RefreshIndicator(
       color: AppColors.medicalBlue,
@@ -474,9 +479,9 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
               ),
             )
           else if (_slots.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Center(child: Text('No slot data found for this date.')),
+            Padding(
+              padding: const EdgeInsets.all(32),
+              child: Center(child: Text(l10n.tr('noSlotData'))),
             )
           else
             ..._slots.map((slot) => Stack(

@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
+import '../../core/localizations.dart';
+import '../../providers/locale_provider.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// Notification Screen
@@ -127,10 +129,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String locale = context.watch<LocaleProvider>().locale;
+    final AppL10n l10n  = AppL10n(locale);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Notification Center'),
+        title: Text(l10n.tr('notificationCenter')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
@@ -152,14 +157,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       children: [
                         Icon(Icons.notifications_active_outlined, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.3)),
                         const SizedBox(height: 16),
-                        const Text('You have no new alerts.', style: TextStyle(color: AppColors.textSecondary, fontSize: 16)),
+                        Text(l10n.tr('noAlerts'), style: const TextStyle(color: AppColors.textSecondary, fontSize: 16)),
                       ],
                     ),
                   )
                 else ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text('System Alerts', style: AppTextStyles.titleLarge),
+                    child: Text(l10n.tr('systemAlerts'), style: AppTextStyles.titleLarge),
                   ),
                   const SizedBox(height: 12),
                   ..._alerts.map((alert) {

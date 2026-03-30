@@ -33,6 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final auth   = context.read<AuthProvider>();
+    final locale = context.read<LocaleProvider>().locale;
+    final l10n   = AppL10n(locale);
 
     final rawPhone = _phoneController.text.trim();
     // Ensure E.164 format
@@ -44,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _otpSent = true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('OTP sent! Check your messages.'),
+            content: Text(l10n.tr('otpSentMsg')),
             backgroundColor: AppColors.medicalBlue,
             behavior: SnackBarBehavior.floating,
           ),
@@ -119,20 +121,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 90,
                       height: 90,
                       decoration: BoxDecoration(
-                        color: AppColors.medicalBlue,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.medicalBlue.withValues(alpha: 0.35),
+                            color: AppColors.medicalBlue.withValues(alpha: 0.15),
                             blurRadius: 24,
                             offset: const Offset(0, 10),
                           ),
                         ],
-                      ),
-                      child: const Icon(
-                        Icons.local_hospital_rounded,
-                        color: AppColors.white,
-                        size: 48,
+                        image: const DecorationImage(
+                          image: AssetImage('assets/icon.png'),
+                          fit: BoxFit.contain, // Ensuring entire logo is visible
+                        ),
                       ),
                     ),
 
@@ -188,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextFormField(
                               controller: _nameController,
                               decoration: InputDecoration(
-                                labelText: 'Your Name (optional)',
+                                labelText: l10n.tr('optionalNameHint'),
                                 prefixIcon: const Icon(Icons.person_outline,
                                     color: AppColors.medicalBlue),
                               ),
@@ -208,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               validator: (v) {
                                 if (v == null || v.trim().length < 10) {
-                                  return 'Enter a valid 10-digit phone number';
+                                  return l10n.tr('invalidPhone');
                                 }
                                 return null;
                               },
@@ -245,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               validator: (v) {
                                 if (v == null || v.trim().length < 6) {
-                                  return 'Enter the 6-digit OTP';
+                                  return l10n.tr('invalidOtpReq');
                                 }
                                 return null;
                               },

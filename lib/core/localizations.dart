@@ -84,6 +84,43 @@ class AppL10n {
     'bookingFailed':      'Booking failed. Please try again.',
     'slotFullMessage':    'This slot is fully booked. Please choose another.',
     'noAppointments':     'No appointments yet.',
+
+    // New Auth / Login
+    'optionalNameHint':   'Your Name (optional)',
+    'invalidPhone':       'Enter a valid 10-digit phone number',
+    'invalidOtpReq':      'Enter the 6-digit OTP',
+    'otpSentMsg':         'OTP sent! Check your messages.',
+    'sessionExpired':     'Session expired. Please request a new OTP.',
+    'invalidOtp':         'Invalid OTP. Please try again.',
+
+    // Dashboard
+    'welcome':            'Welcome, ',
+    'whatToDo':           'What would you like to do?',
+    'bookNew':            'Book New Appointment',
+    'bookNewSub':         'Start our step-by-step triage to schedule your visit.',
+    'myHistory':          'My Appointment History',
+    'myHistorySub':       'View your upcoming appointments and past medical prescriptions.',
+
+    // Booking Wizard
+    'patientAge':         'Patient Age *',
+    'issueDesc':          'Issue Description *',
+    'issueHint':          'e.g. Fever, Headache',
+    'otherComments':      'Other Comments (optional)',
+    'pastHistory':        'Any past medical history?',
+    'selectDateFirst':    'Please select a date first.',
+    'openCalendar':       'Open Calendar',
+    'noSlotData':         'No slot data found for this date.',
+
+    // Patient History
+    'myHistoryTitle':     'My History',
+    'followUpAppt':       'Follow-up Appointment',
+    'prescriptionNotes':  'Prescription / Notes:',
+    'nextVisit':          'Next Visit Needed On:',
+
+    // Notifications
+    'notificationCenter': 'Notification Center',
+    'systemAlerts':       'System Alerts',
+    'noAlerts':           'You have no new alerts.',
   };
 
   // ── Spoken Telugu ──────────────────────────────────────────────────────────
@@ -148,5 +185,42 @@ class AppL10n {
     'bookingFailed':      'బుకింగ్ విఫలమైంది. మళ్ళీ ప్రయత్నించండి.',
     'slotFullMessage':    'ఈ స్లాట్ నిండిపోయింది. మరో సమయం ఎంచుకోండి.',
     'noAppointments':     'ఇంకా అపాయింట్మెంట్లు లేవు.',
+
+    // New Auth / Login
+    'optionalNameHint':   'మీ పేరు (ఐచ్ఛికం)',
+    'invalidPhone':       'సరైన 10 అంకెల నంబరు ఇవ్వండి',
+    'invalidOtpReq':      '6-అంకెల OTP నమోదు చేయండి',
+    'otpSentMsg':         'OTP పంపబడింది! మీ మెసేజ్ చూడండి.',
+    'sessionExpired':     'సెషన్ ముగిసింది. దయచేసి కొత్త OTP పొందండి.',
+    'invalidOtp':         'తప్పు OTP. దయచేసి మళ్ళీ ప్రయత్నించండి.',
+
+    // Dashboard
+    'welcome':            'స్వాగతం, ',
+    'whatToDo':           'మీరు ఏమి చేయాలనుకుంటున్నారు?',
+    'bookNew':            'కొత్త అపాయింట్మెంట్',
+    'bookNewSub':         'మా వైద్య సేవ కోసం సమయాన్ని బుక్ చేసుకోండి.',
+    'myHistory':          'నా అపాయింట్మెంట్ చరిత్ర',
+    'myHistorySub':       'గత అపాయింట్మెంట్లు మరియు మందుల వివరాలు చూడండి.',
+
+    // Booking Wizard
+    'patientAge':         'రోగి వయస్సు *',
+    'issueDesc':          'సమస్య వివరణ *',
+    'issueHint':          'ఉదా. జ్వరం, తలనొప్పి',
+    'otherComments':      'ఇతర వ్యాఖ్యలు (ఐచ్ఛికం)',
+    'pastHistory':        'గత వైద్య చరిత్ర ఏదైనా ఉందా?',
+    'selectDateFirst':    'దయచేసి ముందుగా తేదీ ఎంచుకోండి.',
+    'openCalendar':       'క్యాలెండర్ తెరవండి',
+    'noSlotData':         'ఈ తేదీకి స్లాట్లు అందుబాటులో లేవు.',
+
+    // Patient History
+    'myHistoryTitle':     'నా చరిత్ర',
+    'followUpAppt':       'ఫాలో-అప్ అపాయింట్మెంట్',
+    'prescriptionNotes':  'మందుల చీటీ / సూచనలు:',
+    'nextVisit':          'తదుపరి విజిట్:',
+
+    // Notifications
+    'notificationCenter': 'నోటిఫికేషన్ సెంటర్',
+    'systemAlerts':       'సిస్టమ్ అలర్ట్స్',
+    'noAlerts':           'మీకు కొత్త నోటిఫికేషన్లు లేవు.',
   };
 }

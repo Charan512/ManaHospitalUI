@@ -121,7 +121,7 @@ class PatientDashboard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Welcome, $userName!',
+                          '${l10n.tr('welcome')}$userName!',
                           style: const TextStyle(
                             fontFamily: 'Outfit',
                             color: AppColors.white,
@@ -151,7 +151,7 @@ class PatientDashboard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'What would you like to do?',
+                l10n.tr('whatToDo'),
                 style: AppTextStyles.titleLarge,
               ),
             ),
@@ -159,8 +159,8 @@ class PatientDashboard extends StatelessWidget {
 
             // ── Triage / Booking Card ──────────────────────────────────────
             _DashboardCard(
-              title: 'Book New Appointment',
-              subtitle: 'Start our step-by-step triage to schedule your visit.',
+              title: l10n.tr('bookNew'),
+              subtitle: l10n.tr('bookNewSub'),
               icon: Icons.calendar_month_rounded,
               color: AppColors.medicalBlue,
               bgLight: AppColors.paleSkyBlue,
@@ -176,8 +176,8 @@ class PatientDashboard extends StatelessWidget {
 
             // ── History Card ───────────────────────────────────────────────
             _DashboardCard(
-              title: 'My Appointment History',
-              subtitle: 'View your upcoming appointments and past medical prescriptions.',
+              title: l10n.tr('myHistory'),
+              subtitle: l10n.tr('myHistorySub'),
               icon: Icons.history_rounded,
               color: AppColors.textPrimary,
               bgLight: AppColors.cardBorder.withValues(alpha: 0.5),

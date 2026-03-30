@@ -47,7 +47,7 @@ class ApiService {
   /// Wraps core calls to securely catch socket/timeout failures globally.
   static Future<http.Response> _execute(Future<http.Response> Function() call) async {
     try {
-      final resp = await call().timeout(const Duration(seconds: 15));
+      final resp = await call().timeout(const Duration(seconds: 60));
       
       // If we reach here without throwing, the connection is fundamentally healthy.
       if (isOffline.value) isOffline.value = false;
