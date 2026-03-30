@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Mana Hospital — Android Emulator",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=BACKEND_URL=http://10.0.2.2:3001/api"
+      ]
+    },
+    {
+      "name": "Mana Hospital — iOS Simulator",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=BACKEND_URL=http://localhost:3001/api"
+      ]
+    },
+    {
+      "name": "Mana Hospital — Physical Device (update IP)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=BACKEND_URL=http://192.168.1.100:3001/api"
+      ]
+    },
+    {
+      "name": "Mana Hospital — Production",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=BACKEND_URL=https://api.manahospital.com/api"
+      ]
+    }
+  ]
+}

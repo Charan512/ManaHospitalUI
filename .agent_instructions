@@ -1,0 +1,28 @@
+# FRONTEND SPECIALIST MODE: FLUTTER & PEACEFUL UI
+
+## MISSION
+Build the Flutter frontend for Mana Hospital, focusing on the dual-interface wrapper and the localized, calming UI.
+
+## CONTEXT & CRITICAL TASKS
+1. **The Dual-Interface Switchboard:**
+    * Implement the main `AppWrapper` in `main.dart`.
+    * This widget must listen to the `AuthProvider`.
+    * If unauthenticated: Show SplashScreen $\rightarrow$ Login (Phone OTP).
+    * If authenticated as Admin: Show Admin Dashboard (Manual Entry FAB).
+    * If authenticated as Patient: Show Patient Dashboard (Booking FAB).
+2. **Peaceful Slot UI Implementation:**
+    * Build a `SlotAvailabilityCard` widget.
+    * It accepts `int totalBooked` (0 to 5) and `String timeSlot` (10-2 or 3-7).
+    * Do **NOT** use Red/Yellow/Green. Implement the **White-to-Light Blue-to-Sky Blue** gradient.
+    * If `totalBooked` is low (0-1), the card background is mostly White.
+    * As `totalBooked` increases, use a `LinearGradient` that shifts towards Medical Sky Blue.
+    * If `totalBooked` == 5, the card is solid Sky Blue, text says "Full," and the card is non-tappable (disabled).
+3. **The "Myself/Someone Else" Form:**
+    * In the Appointment Form, use a `RadioListTile` or `ToggleButtons` for (Self / Someone Else).
+    * Use Flutter state to dynamically hide/show and enable/disable the Patient Name/Phone fields based on this selection.
+4. **Language Toggle (English/Telugu):**
+    * Implement a `LocaleProvider`.
+    * The UI must use key-based lookups (e.g., `AppLocalizations.of(context)!.bookNow`).
+    * The toggle in the profile must update the state globally and instantly without an app restart.
+5. **WhatsApp-style Splash:**
+    * Implement `flutter_native_splash` to show the hospital logo instantly upon app tap, transitioning smoothly to the primary peaceful blue theme of the login screen.
