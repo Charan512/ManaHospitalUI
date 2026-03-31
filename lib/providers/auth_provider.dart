@@ -43,10 +43,12 @@ class AuthProvider extends ChangeNotifier {
         _userData = jsonDecode(userJson) as Map<String, dynamic>;
       }
     } catch (_) {
-      // Ignored
+      _jwtToken = null;
+      _userData = null;
     } finally {
       _isBootstrapping = false;
-      notifyListeners();
+      _errorMessage = null;
+      notifyListeners(); // Single notification after all state is settled
     }
   }
 
@@ -57,8 +59,10 @@ class AuthProvider extends ChangeNotifier {
     required Function(String) onCodeSent,
     required Function(String) onError,
   }) async {
-    _setLoading(true);
+    // Clear any stale error from a previous login attempt before starting
+    _isLoading = true;
     _errorMessage = null;
+    notifyListeners();
 
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phone,
@@ -68,16 +72,16 @@ class AuthProvider extends ChangeNotifier {
         await _signInWithCredential(credential);
       },
       verificationFailed: (FirebaseAuthException e) {
-        _setLoading(false);
+        _isLoading = false;
         _errorMessage = e.message ?? 'OTP verification failed.';
-        onError(_errorMessage!);
         notifyListeners();
+        onError(_errorMessage!);
       },
       codeSent: (String verificationId, int? resendToken) {
         _verificationId = verificationId;
-        _setLoading(false);
-        onCodeSent(verificationId);
+        _isLoading = false;
         notifyListeners();
+        onCodeSent(verificationId);
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         _verificationId = verificationId;
@@ -162,14 +166,17 @@ class AuthProvider extends ChangeNotifier {
         name: name,
       );
 
+      // Set all state fields atomically BEFORE notifying the router
       _jwtToken = body['token'] as String;
       _userData  = body['user']  as Map<String, dynamic>;
+      _isLoading = false;
+      _errorMessage = null;
 
       // Persist session
       await _storage.write(key: _jwtKey, value: _jwtToken);
       await _storage.write(key: _userKey, value: jsonEncode(_userData));
 
-      _setLoading(false);
+      // Single notification: GoRouter redirect fires exactly once with fully consistent state
       notifyListeners();
       return true;
     } on ApiException catch (e) {
@@ -199,13 +206,21 @@ class AuthProvider extends ChangeNotifier {
 
   /// Logs the user out and clears all stored credentials.
   Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
-    await _storage.delete(key: _jwtKey);
-    await _storage.delete(key: _userKey);
+    // Clear in-memory state first, atomically
     _jwtToken = null;
     _userData = null;
     _verificationId = null;
+    _errorMessage = null;
+    _isLoading = false;
+    // Notify BEFORE async ops so GoRouter immediately routes to /login
     notifyListeners();
+
+    // Then clean up Firebase + storage in the background
+    await Future.wait([
+      FirebaseAuth.instance.signOut(),
+      _storage.delete(key: _jwtKey),
+      _storage.delete(key: _userKey),
+    ]);
   }
 
   void _setLoading(bool value) {
