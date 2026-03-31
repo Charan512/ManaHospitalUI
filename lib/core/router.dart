@@ -41,8 +41,9 @@ GoRouter createRouter(AuthProvider authProvider) {
         return null; // Already at /login
       }
 
-      // If they ARE authenticated but stuck on the login page, redirect them.
-      if (state.matchedLocation == '/login') {
+      // If authenticated but stuck on /login OR /splash, push to correct dashboard.
+      // This handles BOTH first-time login AND cold-start auto-login scenarios.
+      if (state.matchedLocation == '/login' || state.matchedLocation == '/splash') {
         return isAdmin ? '/admin' : '/patient';
       }
 
