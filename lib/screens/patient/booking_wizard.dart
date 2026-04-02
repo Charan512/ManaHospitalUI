@@ -150,12 +150,8 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
       Navigator.pop(context);
     } on ApiException catch (e) {
       if (!mounted) return;
-      final String msg = e.hasActiveAppointment
-          ? 'You already have an active appointment. Please wait until it is reviewed.'
-          : e.message;
-
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(msg),
+        content: Text(e.message),
         backgroundColor: AppColors.deepBlue,
         behavior: SnackBarBehavior.floating,
       ));
