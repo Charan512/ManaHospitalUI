@@ -31,14 +31,21 @@ class _OfflineEntryFormState extends State<OfflineEntryForm> {
     '03:00 PM - 07:00 PM',
   ];
 
-  String get _todayString {
-    final now = DateTime.now();
-    return '${now.year}-${now.month.toString().padLeft(2, '0')}-'
-        '${now.day.toString().padLeft(2, '0')}';
+  DateTime _selectedDate = DateTime.now();
+  String get _dateString {
+    return '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-'
+        '${_selectedDate.day.toString().padLeft(2, '0')}';
   }
 
   bool _isSlotExpired(String slot) {
     final now = DateTime.now();
+    // Only apply expiration rules if the selected date is today.
+    if (_selectedDate.year != now.year ||
+        _selectedDate.month != now.month ||
+        _selectedDate.day != now.day) {
+      return false; 
+    }
+
     final hour = now.hour;
     final minute = now.minute;
     if (slot == '10:00 AM - 02:00 PM') {
@@ -52,9 +59,41 @@ class _OfflineEntryFormState extends State<OfflineEntryForm> {
   @override
   void initState() {
     super.initState();
-    // Default to the first non-expired slot, if any.
-    if (_isSlotExpired('10:00 AM - 02:00 PM') && !_isSlotExpired('03:00 PM - 07:00 PM')) {
+    // If BOTH slots have expired today (i.e. past 7 PM), default to tomorrow.
+    final now = DateTime.now();
+    if (now.hour > 19 || (now.hour == 19 && now.minute > 0)) {
+      _selectedDate = now.add(const Duration(days: 1));
+    } else if (_isSlotExpired('10:00 AM - 02:00 PM')) {
       _selectedSlot = '03:00 PM - 07:00 PM';
+    }
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(), // Disable past dates natively
+      lastDate: DateTime.now().add(const Duration(days: 90)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: AppColors.medicalBlue,
+            colorScheme: const ColorScheme.light(primary: AppColors.medicalBlue),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        // Default back to first slot if moving to a future date
+        if (!_isSlotExpired('10:00 AM - 02:00 PM')) {
+          _selectedSlot = '10:00 AM - 02:00 PM';
+        }
+      });
     }
   }
 
@@ -75,7 +114,7 @@ class _OfflineEntryFormState extends State<OfflineEntryForm> {
     try {
       final body = await ApiService.addOfflinePatient(
         token:        auth.jwtToken!,
-        date:         _todayString,
+        date:         _dateString,
         slot:         _selectedSlot,
         patientName:  _nameController.text.trim(),
         patientPhone: _phoneController.text.trim(),
@@ -185,6 +224,46 @@ class _OfflineEntryFormState extends State<OfflineEntryForm> {
                   }
                   return null;
                 },
+              ),
+
+              const SizedBox(height: 24),
+
+              // Date selection
+              Text(
+                'Select Date',
+                style: AppTextStyles.labelLarge
+                    .copyWith(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 12),
+              
+              InkWell(
+                onTap: _pickDate,
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.cardBorder, width: 1.5),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_month_rounded, color: AppColors.medicalBlue, size: 20),
+                      const SizedBox(width: 12),
+                      Text(
+                        _dateString,
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                    ],
+                  ),
+                ),
               ),
 
               const SizedBox(height: 24),
