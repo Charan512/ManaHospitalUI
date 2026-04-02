@@ -37,6 +37,27 @@ class _OfflineEntryFormState extends State<OfflineEntryForm> {
         '${now.day.toString().padLeft(2, '0')}';
   }
 
+  bool _isSlotExpired(String slot) {
+    final now = DateTime.now();
+    final hour = now.hour;
+    final minute = now.minute;
+    if (slot == '10:00 AM - 02:00 PM') {
+      return hour > 14 || (hour == 14 && minute > 0);
+    } else if (slot == '03:00 PM - 07:00 PM') {
+      return hour > 19 || (hour == 19 && minute > 0);
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Default to the first non-expired slot, if any.
+    if (_isSlotExpired('10:00 AM - 02:00 PM') && !_isSlotExpired('03:00 PM - 07:00 PM')) {
+      _selectedSlot = '03:00 PM - 07:00 PM';
+    }
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -177,60 +198,76 @@ class _OfflineEntryFormState extends State<OfflineEntryForm> {
               const SizedBox(height: 12),
 
               ..._slots.map(
-                (slot) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedSlot = slot),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: _selectedSlot == slot
-                            ? AppColors.medicalBlue
-                            : AppColors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: _selectedSlot == slot
-                              ? AppColors.medicalBlue
-                              : AppColors.cardBorder,
-                          width: 1.5,
+                (slot) {
+                  final bool isExpired = _isSlotExpired(slot);
+                  final bool isSelected = _selectedSlot == slot;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: GestureDetector(
+                      onTap: isExpired ? null : () => setState(() => _selectedSlot = slot),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isExpired 
+                              ? AppColors.background 
+                              : (isSelected ? AppColors.medicalBlue : AppColors.white),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: isExpired 
+                                ? AppColors.cardBorder 
+                                : (isSelected ? AppColors.medicalBlue : AppColors.cardBorder),
+                            width: 1.5,
+                          ),
+                          boxShadow: isSelected && !isExpired
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.medicalBlue.withValues(alpha: 0.2),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
+                              : [],
                         ),
-                        boxShadow: _selectedSlot == slot
-                            ? [
-                                BoxShadow(
-                                  color: AppColors.medicalBlue.withValues(alpha: 0.2),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            color: _selectedSlot == slot
-                                ? AppColors.white
-                                : AppColors.medicalBlue,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            slot,
-                            style: TextStyle(
-                              fontFamily: 'Outfit',
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: _selectedSlot == slot
-                                  ? AppColors.white
-                                  : AppColors.textPrimary,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              color: isExpired 
+                                  ? AppColors.textSecondary 
+                                  : (isSelected ? AppColors.white : AppColors.medicalBlue),
+                              size: 20,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 12),
+                            Text(
+                              slot,
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: isExpired 
+                                    ? AppColors.textSecondary 
+                                    : (isSelected ? AppColors.white : AppColors.textPrimary),
+                                decoration: isExpired ? TextDecoration.lineThrough : null,
+                              ),
+                            ),
+                            if (isExpired) ...[
+                              const Spacer(),
+                              Text(
+                                'Closed',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ]
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }
               ),
 
               const SizedBox(height: 32),
